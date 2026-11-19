@@ -1,0 +1,186 @@
+# Implementation Plan
+
+## Analysis
+
+This task is a small Turborepo monorepo with two connected feature areas:
+
+1. **User feature:** create a user from a username and view a user by ID.
+2. **ToDoItem feature:** create a ToDoItem with a title and assignee ID, and list items for a selected user.
+
+The shippable application will own routing, layout, and package composition. The
+`users` and `todos` packages will be independent feature boundaries; neither will
+import the other. Shared concerns such as the TanStack Query client, types,
+utilities, Tailwind setup, or TypeScript configuration will live in the `core`
+package. The chosen backend is an in-memory/API-fake client so no real server or
+authentication is required.
+
+The highest-risk behavior is optimistic ToDoItem creation. The implementation
+must update the correct TanStack Query cache immediately, and roll back that exact
+optimistic state if the mutation rejects. Loading, error, and empty states are
+first-class acceptance criteria rather than happy-path details.
+
+## Target structure
+
+```text
+senior-frontend-engineer/
+  apps/web/
+  packages/users/
+  packages/todos/
+  packages/core/
+  ai-journey/
+  README.md
+```
+
+Package dependencies should follow this direction:
+
+- `apps/web` may depend on `users`, `todos`, and `core`.
+- `users` may depend only on `core`.
+- `todos` may depend only on `core`.
+- `core` must not depend on feature packages.
+
+## Step-by-step plan
+
+### 1. Scaffold and enforce workspace boundaries
+
+Create the Turborepo workspace, Vite React app, feature packages, core package,
+and minimal build/lint/dev pipeline.
+
+**Justification:** This establishes the structural requirement immediately and
+prevents feature coupling from becoming an implementation shortcut.
+
+**Testable acceptance:**
+- `pnpm install` or the selected package manager completes.
+- `pnpm build` builds the app and all packages.
+- A dependency inspection or explicit package manifests confirms `users` and
+  `todos` do not depend on each other.
+- `pnpm dev` starts the web application.
+
+### 2. Add shared infrastructure
+
+Set up shared TypeScript configuration, Tailwind integration, a TanStack Query
+client, and only genuinely reusable types/utilities.
+
+**Justification:** Shared infrastructure belongs in `core`; feature-specific
+models and services do not.
+
+**Testable acceptance:**
+- The app can render Tailwind styles.
+- TanStack Query provider is initialized once at the application composition root.
+- Shared exports are importable by both feature packages without circular
+  package dependencies.
+
+### 3. Implement the in-memory data access client
+
+Add a small fake API that supports user create/get and ToDoItem create/list
+operations. Include deterministic latency and an injectable failure mechanism.
+
+**Justification:** This lets the app demonstrate real asynchronous loading,
+error handling, and mutations without adding a backend outside task scope.
+
+**Testable acceptance:**
+- A created user can be retrieved by ID.
+- A created ToDoItem appears only in the list for its assignee.
+- A forced mutation failure is observable and produces a rejected mutation.
+- Loading and error states can be exercised through the UI.
+
+### 4. Build the user feature package
+
+Separate the package into types, API/data hooks, presentation components, and
+public exports. Add username validation and a user detail route.
+
+**Justification:** Keeping API calls and stateful hooks out of components makes
+the feature reusable and testable, while route components remain thin.
+
+**Testable acceptance:**
+- Submitting a blank or overlong username shows a meaningful inline error.
+- Submitting a valid username creates a user and exposes a navigable detail route.
+- `/users/:id` loads or refetches the requested user.
+- Unknown/invalid IDs show an error or not-found state instead of crashing.
+- Labels and keyboard submit work for the create form.
+
+### 5. Build the ToDoItem feature package
+
+Separate types, API/data hooks, optimistic mutation logic, and presentation.
+Include title validation and assignee selection or assignee ID input.
+
+**Justification:** The mutation cache update is feature-specific and belongs
+inside the ToDoItem package, with UI composition kept thin.
+
+**Testable acceptance:**
+- Blank, whitespace-only, or excessively long titles show validation errors.
+- Valid creation immediately inserts an item into the active user's list.
+- The optimistic item is removed or restored according to the mutation result.
+- On forced failure, the original cache state is restored and an error is shown.
+- On success, a temporary ID is replaced or reconciled with server data.
+- A list for the wrong/unknown user does not leak items for another user.
+
+### 6. Wire TanStack Router and Jotai
+
+Create routes for the user detail and ToDoItem experience, such as `/users/:id`
+and `/todos`. Use a Jotai atom for one deliberate cross-cutting concern, such as
+the selected user ID.
+
+**Justification:** Jotai should represent shared UI state across feature
+boundaries, not duplicate TanStack Query server state.
+
+**Testable acceptance:**
+- Direct navigation to `/users/:id` works and supplies the correct route param.
+- Navigation to `/todos` retains or selects the chosen user through the Jotai
+  state.
+- Route transitions do not lose the required TanStack Query cache behavior.
+- Jotai is not used to mirror server entities or API responses.
+
+### 7. Compose and polish the web app
+
+Create a small navigation shell and consistent Tailwind layout. Keep route
+components as composition layers that import feature public exports.
+
+**Justification:** Clean composition makes module boundaries visible and keeps
+feature packages independent.
+
+**Testable acceptance:**
+- Primary navigation is keyboard-operable.
+- Loading, error, empty, and success states are visually distinct.
+- Forms have associated labels and semantic submit controls.
+- The app remains usable at a narrow viewport.
+
+### 8. Add focused automated checks
+
+Prefer targeted unit/component tests over broad coverage. Use Vitest and Testing
+Library if scaffolded with the monorepo.
+
+**Justification:** The 2–4 hour scope calls for proof of the most failure-prone
+behaviors, especially optimistic updates and route/detail flows.
+
+**Testable acceptance:**
+- Optimistic ToDoItem creation inserts and rolls back correctly.
+- User validation and successful creation are tested.
+- Route params resolve the requested user.
+- Shared package boundary rules are enforced through package manifests or lint,
+  where practical.
+
+### 9. Document decisions and produce final README
+
+Write a half-page README covering architecture, package boundaries, backend
+choice, optimistic updates, Jotai choice, validation choice, trade-offs, install
+and run instructions, performance considerations, and the production testing
+strategy.
+
+**Justification:** The README is a primary evaluation artifact and explains
+judgment as clearly as the code.
+
+**Testable acceptance:**
+- A fresh checkout has copy/paste install and run commands.
+- All package boundaries and route locations are described accurately.
+- Performance notes distinguish query caching, re-renders, and code splitting.
+- Testing strategy lists test types and the highest-value cases.
+
+## Validation order
+
+1. Workspace install, lint, and build.
+2. User create/detail happy path.
+3. Loading, unknown user, and validation states.
+4. ToDoItem create/list happy path.
+5. Forced ToDoItem failure and cache rollback.
+6. Direct-route navigation and Jotai-selected assignee.
+7. Keyboard and basic accessibility review.
