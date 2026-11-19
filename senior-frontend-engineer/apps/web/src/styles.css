@@ -1,0 +1,25 @@
+@import "tailwindcss";
+@import "@internal/core/theme.css";
+
+/* @source uses the filesystem path, cannot use `@internal/...` */
+@source "../../../packages/core/src/";
+@source "../../../packages/todos/src/";
+@source "../../../packages/users/src/";
+
+:root {
+  font-family: Inter, ui-sans-serif, system-ui, sans-serif;
+  color: #172033;
+  background: #f7f8fa;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  min-width: 320px;
+  margin: 0;
+  line-height: 1.5;
+}

@@ -4,11 +4,18 @@
   "private": true,
   "type": "module",
   "exports": {
-    ".": "./src/index.ts"
+    ".": "./src/index.ts",
+    "./theme.css": "./src/theme.css"
   },
   "scripts": {
     "dev": "tsc --watch",
     "build": "tsc",
     "lint": "tsc --noEmit"
+  },
+  "peerDependencies": {
+    "@tanstack/react-query": "catalog:"
+  },
+  "devDependencies": {
+    "@tanstack/react-query": "catalog:"
   }
 }

@@ -14,7 +14,11 @@
   "dependencies": {
     "@internal/core": "workspace:*"
   },
+  "peerDependencies": {
+    "@tanstack/react-query": "catalog:"
+  },
   "devDependencies": {
-    "@types/react": "^19.3.0"
+    "@tanstack/react-query": "catalog:",
+    "@types/react": "catalog:"
   }
 }

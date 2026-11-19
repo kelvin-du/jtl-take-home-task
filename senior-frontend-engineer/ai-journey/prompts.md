@@ -41,3 +41,19 @@ the main behavioral checkpoint.
 - Did not implement the app in this planning pass; the next pass should start
   with workspace scaffolding and shared infrastructure.
 - No AI output was overridden yet because no implementation was generated.
+
+## Implementation key prompts
+
+### Step 2 — shared Query, styling, and dependency versions
+
+> - Configure a pnpm catalog with one version for TanStack Query, React,
+>   React DOM, and both React type packages. Use catalog references in the
+>   workspace so the apps and packages stay aligned.
+> - Keep the web app as the owner of the runtime React, React DOM, and Query
+>   dependencies. Declare Query as a peer and development dependency in core
+>   and both feature packages to avoid duplicate Query instances.
+> - Create a shared QueryClient in core and provide it once at the web app
+>   root.
+
+The initial setup declared separate versions for TanStack Query, React, and React DOM,
+which could lead to version conflict across packages. I asked for a shared pnpm catalog, including the React type packages, to keep those versions aligned.
