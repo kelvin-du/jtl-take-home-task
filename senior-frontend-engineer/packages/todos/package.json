@@ -1,0 +1,20 @@
+{
+  "name": "@internal/todos",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "dev": "tsc --watch",
+    "build": "tsc",
+    "lint": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@internal/core": "workspace:*"
+  },
+  "devDependencies": {
+    "@types/react": "^19.3.0"
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "name": "senior-frontend-engineer",
+  "private": true,
+  "packageManager": "pnpm@10.33.2",
+  "scripts": {
+    "build": "turbo run build",
+    "dev:web": "turbo run dev --filter=@internal/web",
+    "lint": "turbo run lint"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "^6.3.0",
+    "turbo": "^2.11.13",
+    "typescript": "^7.0.2",
+    "vite": "^8.3.8"
+  }
+}

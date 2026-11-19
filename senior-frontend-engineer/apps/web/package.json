@@ -1,0 +1,21 @@
+{
+  "name": "@internal/web",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "vite build",
+    "dev": "vite",
+    "lint": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@internal/core": "workspace:*",
+    "@internal/todos": "workspace:*",
+    "@internal/users": "workspace:*",
+    "react": "^19.3.0",
+    "react-dom": "^19.3.0"
+  },
+  "devDependencies": {
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0"
+  }
+}
