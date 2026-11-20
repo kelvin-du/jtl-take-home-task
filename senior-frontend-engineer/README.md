@@ -16,6 +16,8 @@ their trade-offs are established.
   `@tanstack/react-query` versions aligned across the workspace. The web app
   provides the runtime dependencies; core and feature packages declare Query as
   a peer.
+- TanStack Router and its Vite plugin are declared directly in `apps/web`
+  because only that app uses them.
 
 ## Local development
 
@@ -29,6 +31,20 @@ pnpm dev:web
 
 Open the local URL printed by Vite. Run `pnpm build` for a production build and
 `pnpm lint` for TypeScript checks.
+
+## Routes
+
+Routes are file-based in `apps/web/src/routes`; the TanStack Router Vite plugin
+generates `apps/web/src/routeTree.gen.ts` from these route modules:
+
+- `index.tsx` maps `/` to an empty placeholder.
+- `users/route.tsx` provides the shared parent route for user pages.
+- `users/index.tsx` maps to `/users`.
+- `users/new.tsx` maps to `/users/new`.
+- `users/$userId.tsx` maps to `/users/:id`.
+- `todos.tsx` maps to `/todos`.
+
+All route components are empty placeholders at this stage.
 
 ## Data layer
 

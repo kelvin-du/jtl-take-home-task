@@ -52,7 +52,8 @@ the main behavioral checkpoint.
 >   root.
 
 The initial setup declared separate versions for TanStack Query, React, and React DOM,
-which could lead to version conflict across packages. I asked for a shared pnpm catalog, including the React type packages, to keep those versions aligned.
+which could lead to version conflict across packages. I asked for a shared pnpm catalog,
+including the React type packages, to keep those versions aligned.
 
 ### Step 3 — in-memory data access client
 
@@ -66,4 +67,22 @@ which could lead to version conflict across packages. I asked for a shared pnpm 
 > - Update the README and this AI journey record.
 
 The initial implementation put the feature API functions in `core`.
-I moved the user functions to `packages/users` and the ToDoItem functions to `packages/todos`, then exposed them through each package's entry point for `apps/web` to use. The shared fake backend stays in `core` so both features use the same in-memory data without depending on each other.
+I moved the user functions to `packages/users` and the ToDoItem functions to `packages/todos`,
+then exposed them through each package's entry point for `apps/web` to use. The shared
+fake backend stays in `core` so both features use the same in-memory data without depending on each other.
+
+### Step 4 — router-first page routes
+
+> - Wire TanStack Router into `apps/web` before building the feature pages.
+> - Use file-based routing to create `/`, `/users`, `/users/new`,
+>   `/users/$userId`, and `/todos`; leave every route as an empty placeholder.
+> - Put all user-related route files in `apps/web/src/routes/users/` instead
+>   of using flat filenames.
+> - Do not hand-edit the generated route tree.
+
+I decided to move all user-related route files into the `users` folder instead
+of keeping them flat. This keeps related routes together and gives them a
+shared layout.
+
+I declared `@tanstack/react-router` and `@tanstack/router-plugin` directly in
+`apps/web/package.json` instead of adding them to the shared pnpm catalog.

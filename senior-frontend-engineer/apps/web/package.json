@@ -12,11 +12,13 @@
     "@internal/todos": "workspace:*",
     "@internal/users": "workspace:*",
     "@tanstack/react-query": "catalog:",
+    "@tanstack/react-router": "^1.170.46",
     "react": "catalog:",
     "react-dom": "catalog:"
   },
   "devDependencies": {
     "@tailwindcss/vite": "^4.3.5",
+    "@tanstack/router-plugin": "^1.169.0",
     "@types/react": "catalog:",
     "@types/react-dom": "catalog:",
     "tailwindcss": "^4.3.5"
