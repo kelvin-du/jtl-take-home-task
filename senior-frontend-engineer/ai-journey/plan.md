@@ -83,25 +83,56 @@ error handling, and mutations without adding a backend outside task scope.
 - A forced mutation failure is observable and produces a rejected mutation.
 - Loading and error states can be exercised through the UI.
 
-### 4. Build the user feature package
+### 4. Wire TanStack Router into the web app and create page routes
+
+Set up TanStack Router's Vite plugin and file-based route modules in
+`apps/web/src/routes` before adding the feature pages. Establish `/`, `/users`,
+`/users/new`, `/users/$userId`, and `/todos`. Keep route files in the web app
+rather than in the feature packages. Each route starts with a placeholder page;
+group the user routes under `routes/users/` with a shared layout. Defer feature
+UI and data hooks to their feature steps.
+
+**Justification:** Establishing and checking every page path first gives later
+feature work a clear place to be mounted and keeps routing out of reusable
+feature packages.
+
+**Testable acceptance:**
+- The web app renders through `RouterProvider`.
+- The Vite plugin generates the route tree from the route files.
+- `/`, `/users`, `/users/new`, `/users/:id`, and `/todos` each resolve to a
+  placeholder page.
+- Direct navigation to every route renders its placeholder without a 404.
+- The user detail route recognizes its ID parameter without mounting the
+  feature page yet.
+- `/users/new` is the create-user route; `/users/$userId` is the detail route.
+- The user route modules are organized under `routes/users/`, with a shared
+  layout rendering nested pages through `<Outlet />`.
+- No feature form, query hook, or ToDoItem UI is mounted in this step.
+
+### 5. Build the user feature package
 
 Separate the package into types, API/data hooks, presentation components, and
-public exports. Add username validation and a user detail route.
+public exports. Add username validation and the user detail page component,
+add a user-list query, and connect the user experience to `/users`,
+`/users/new`, and `/users/$userId`, replacing those route placeholders.
 
 **Justification:** Keeping API calls and stateful hooks out of components makes
-the feature reusable and testable, while route components remain thin.
+the feature reusable and testable, while the app owns route registration.
 
 **Testable acceptance:**
 - Submitting a blank or overlong username shows a meaningful inline error.
-- Submitting a valid username creates a user and exposes a navigable detail route.
-- `/users/:id` loads or refetches the requested user.
+- Submitting a valid username creates a user and navigates to its detail page.
+- Navigation to the new user's detail page does not reload the app.
+- `/users` lists all users and links to their detail pages.
+- The user detail page loads or refetches the requested ID.
 - Unknown/invalid IDs show an error or not-found state instead of crashing.
 - Labels and keyboard submit work for the create form.
 
-### 5. Build the ToDoItem feature package
+### 6. Build the ToDoItem feature package
 
 Separate types, API/data hooks, optimistic mutation logic, and presentation.
-Include title validation and assignee selection or assignee ID input.
+Include title validation and assignee selection or assignee ID input, then
+replace the `/todos` placeholder with the ToDoItem experience.
 
 **Justification:** The mutation cache update is feature-specific and belongs
 inside the ToDoItem package, with UI composition kept thin.
@@ -113,24 +144,27 @@ inside the ToDoItem package, with UI composition kept thin.
 - On forced failure, the original cache state is restored and an error is shown.
 - On success, a temporary ID is replaced or reconciled with server data.
 - A list for the wrong/unknown user does not leak items for another user.
+- `/todos` displays all ToDoItems.
 
-### 6. Wire TanStack Router and Jotai
+### 7. Add Jotai-backed toast notifications
 
-Create routes for the user detail and ToDoItem experience, such as `/users/:id`
-and `/todos`. Use a Jotai atom for one deliberate cross-cutting concern, such as
-the selected user ID.
+Use Jotai to manage transient toast state and render a shared toast viewport at
+the app root. Show success and error notifications for user and ToDoItem
+mutations. Keep server data in TanStack Query.
 
-**Justification:** Jotai should represent shared UI state across feature
-boundaries, not duplicate TanStack Query server state.
+**Justification:** Toasts provide consistent feedback across feature routes.
+Jotai is suitable for this shared UI state without duplicating server data.
 
 **Testable acceptance:**
-- Direct navigation to `/users/:id` works and supplies the correct route param.
-- Navigation to `/todos` retains or selects the chosen user through the Jotai
-  state.
-- Route transitions do not lose the required TanStack Query cache behavior.
-- Jotai is not used to mirror server entities or API responses.
+- Successful user and ToDoItem mutations show a success toast.
+- Failed mutations show an error toast without swallowing the mutation error.
+- Toasts can be dismissed manually and automatically disappear after five
+  seconds.
+- Success and error notifications use appropriate live-region semantics, and
+  the dismiss control is keyboard-accessible.
+- Jotai stores only transient notification state, not users or ToDoItems.
 
-### 7. Compose and polish the web app
+### 8. Compose and polish the web app
 
 Create a small navigation shell and consistent Tailwind layout. Keep route
 components as composition layers that import feature public exports.
@@ -144,7 +178,7 @@ feature packages independent.
 - Forms have associated labels and semantic submit controls.
 - The app remains usable at a narrow viewport.
 
-### 8. Add focused automated checks
+### 9. Add focused automated checks
 
 Prefer targeted unit/component tests over broad coverage. Use Vitest and Testing
 Library if scaffolded with the monorepo.
@@ -159,12 +193,12 @@ behaviors, especially optimistic updates and route/detail flows.
 - Shared package boundary rules are enforced through package manifests or lint,
   where practical.
 
-### 9. Document decisions and produce final README
+### 10. Document decisions and produce final README
 
 Write a half-page README covering architecture, package boundaries, backend
-choice, optimistic updates, Jotai choice, validation choice, trade-offs, install
-and run instructions, performance considerations, and the production testing
-strategy.
+choice, optimistic updates, Jotai-backed toast notifications, validation
+choice, trade-offs, install and run instructions, performance considerations,
+and the production testing strategy.
 
 **Justification:** The README is a primary evaluation artifact and explains
 judgment as clearly as the code.
@@ -178,9 +212,10 @@ judgment as clearly as the code.
 ## Validation order
 
 1. Workspace install, lint, and build.
-2. User create/detail happy path.
-3. Loading, unknown user, and validation states.
+2. Direct navigation to `/`, `/users`, `/users/new`, `/users/:id`, and
+   `/todos`, confirming each placeholder renders before feature UI is added.
+3. User create/detail happy path, loading, unknown user, and validation states.
 4. ToDoItem create/list happy path.
 5. Forced ToDoItem failure and cache rollback.
-6. Direct-route navigation and Jotai-selected assignee.
-7. Keyboard and basic accessibility review.
+6. Jotai success/error toast behavior and manual/automatic dismissal.
+7. Keyboard and live-region accessibility review.
