@@ -12,7 +12,7 @@
 > 3. Write a step-by-step plan. For each step include:
 >    - what you'll do and why (justification)
 >    - how to verify it (test, command, or manual check)
-> 4. Stop and wait for my approval before implementing.
+> 4. Stop and wait for my approval before finishing each step.
 > 5. After each task is done, append an entry to `/senior-frontend-engineer/ai-journey.md`
 >    with: what was done, key decisions and why, problems hit, and what you'd
 >    do differently.
@@ -26,9 +26,6 @@ the main behavioral checkpoint.
 ## Toolchain
 
 - **AI assistant:** Copilot SDK in VS Code.
-- **Repository tools:** built-in file view, glob, ripgrep, apply-patch, and git
-  status tools.
-- **MCP servers:** none used for this planning pass.
 - **Skills:** none loaded.
 - **External models:** not selected or exposed directly in this session.
 
@@ -40,7 +37,6 @@ the main behavioral checkpoint.
   choices.
 - Did not implement the app in this planning pass; the next pass should start
   with workspace scaffolding and shared infrastructure.
-- No AI output was overridden yet because no implementation was generated.
 
 ## Implementation key prompts
 
@@ -57,3 +53,17 @@ the main behavioral checkpoint.
 
 The initial setup declared separate versions for TanStack Query, React, and React DOM,
 which could lead to version conflict across packages. I asked for a shared pnpm catalog, including the React type packages, to keep those versions aligned.
+
+### Step 3 — in-memory data access client
+
+> - Add a shared in-memory backend in `packages/core`. Give it a default delay
+>   of 300 ms, allow custom delays, and support a one-time injected failure for
+>   a chosen operation.
+> - Name the shared exports `fakeBackend` and `createFakeBackend`.
+> - Let `packages/users` expose `createUser` and `getUser`
+> - Let `packages/todos` expose `createToDoItem` and `listToDoItemsByUser`.
+> - Both packages must use the same backend and must not depend on each other.
+> - Update the README and this AI journey record.
+
+The initial implementation put the feature API functions in `core`.
+I moved the user functions to `packages/users` and the ToDoItem functions to `packages/todos`, then exposed them through each package's entry point for `apps/web` to use. The shared fake backend stays in `core` so both features use the same in-memory data without depending on each other.

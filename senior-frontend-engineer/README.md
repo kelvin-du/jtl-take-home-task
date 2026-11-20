@@ -30,8 +30,15 @@ pnpm dev:web
 Open the local URL printed by Vite. Run `pnpm build` for a production build and
 `pnpm lint` for TypeScript checks.
 
+## Data layer
+
+`@internal/core` provides the shared in-memory fake backend, including 300 ms
+latency, session-scoped data, and one-shot failure injection through
+`fakeBackend.failNext(...)`. The `users` and `todos` packages expose their own
+feature-facing API functions and use that same backend.
+
 ## Decisions to finalize
 
-As the implementation progresses, document the fake API behavior, optimistic
-ToDoItem mutation and rollback, selected-user state, performance considerations,
-and production testing strategy here.
+As implementation progresses, document the optimistic ToDoItem mutation and
+rollback, selected-user state, performance considerations, and production
+testing strategy here.
