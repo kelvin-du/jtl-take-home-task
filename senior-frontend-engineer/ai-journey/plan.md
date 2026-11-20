@@ -4,7 +4,8 @@
 
 This task is a small Turborepo monorepo with two connected feature areas:
 
-1. **User feature:** create a user from a username and view a user by ID.
+1. **User feature:** create a user with a username and email, and view a user
+   by ID.
 2. **ToDoItem feature:** create a ToDoItem with a title and assignee ID, and list items for a selected user.
 
 The shippable application will own routing, layout, and package composition. The
@@ -112,19 +113,26 @@ feature packages.
 ### 5. Build the user feature package
 
 Separate the package into types, API/data hooks, presentation components, and
-public exports. Add username validation and the user detail page component,
-add a user-list query, and connect the user experience to `/users`,
+public exports. Add Zod validation for username and required email, enforce
+case-insensitive email uniqueness in the fake backend, add the user detail page
+component and user-list query, and connect the user experience to `/users`,
 `/users/new`, and `/users/$userId`, replacing those route placeholders.
 
 **Justification:** Keeping API calls and stateful hooks out of components makes
-the feature reusable and testable, while the app owns route registration.
+the feature reusable and testable, while the app owns route registration. Zod
+provides consistent field validation, while the backend enforces email
+uniqueness.
 
 **Testable acceptance:**
-- Submitting a blank or overlong username shows a meaningful inline error.
-- Submitting a valid username creates a user and navigates to its detail page.
+- Blank or overlong usernames and blank or invalid emails show meaningful
+  inline errors.
+- Submitting a valid username and email creates a user and navigates to its
+  detail page.
+- Duplicate email addresses are rejected case-insensitively.
 - Navigation to the new user's detail page does not reload the app.
-- `/users` lists all users and links to their detail pages.
+- `/users` lists all users with their emails and links to their detail pages.
 - The user detail page loads or refetches the requested ID.
+- The user detail page displays the user's email.
 - Unknown/invalid IDs show an error or not-found state instead of crashing.
 - Labels and keyboard submit work for the create form.
 

@@ -1,9 +1,14 @@
-import { fakeBackend, type User } from "@internal/core";
+import { fakeBackend } from "@internal/core";
+import type { CreateUserInput, User } from "./types";
 
-export function createUser(username: string): Promise<User> {
-  return fakeBackend.createUser(username);
+export function createUser(input: CreateUserInput): Promise<User> {
+  return fakeBackend.createUser(input);
 }
 
 export function getUser(id: string): Promise<User | null> {
   return fakeBackend.getUser(id);
+}
+
+export function listUsers(): Promise<User[]> {
+  return fakeBackend.listUsers();
 }

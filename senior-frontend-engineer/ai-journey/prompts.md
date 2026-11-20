@@ -86,3 +86,16 @@ shared layout.
 
 I declared `@tanstack/react-router` and `@tanstack/router-plugin` directly in
 `apps/web/package.json` instead of adding them to the shared pnpm catalog.
+
+### Step 5 — build the user feature package
+
+> - Implement the users feature as a package with its own types, API, React
+>   Query hooks, validation, presentation components, and public exports.
+> - Add hooks for listing users, retrieving a user by ID, and creating a user.
+> - Require email during user creation, validate it with Zod, and reject
+>   duplicate email addresses case-insensitively.
+> - Connect `/users`, `/users/new`, and `/users/$userId` to the list, create,
+>   and detail experiences.
+> - Validate usernames (required and max 50 characters) and emails; show
+>   loading/error/not-found states and navigate to the new user's detail route.
+> - Update the README and AI journey record.

@@ -1,6 +1,7 @@
 export interface User {
   id: string;
   username: string;
+  email: string;
 }
 
 export interface ToDoItem {
@@ -15,10 +16,12 @@ interface FakeDb {
 }
 
 export type CreateToDoItemInput = Pick<ToDoItem, "title" | "assigneeId">;
+export type CreateUserInput = Pick<User, "username" | "email">;
 
 export type FakeBackendOperation =
   | "createUser"
   | "getUser"
+  | "listUsers"
   | "createToDoItem"
   | "listToDoItemsByUser";
 
@@ -27,8 +30,9 @@ export interface FakeBackendOptions {
 }
 
 export interface FakeBackend {
-  createUser(username: string): Promise<User>;
+  createUser(input: CreateUserInput): Promise<User>;
   getUser(id: string): Promise<User | null>;
+  listUsers(): Promise<User[]>;
   createToDoItem(input: CreateToDoItemInput): Promise<ToDoItem>;
   listToDoItemsByUser(userId: string): Promise<ToDoItem[]>;
   failNext(operation: FakeBackendOperation, error?: Error): void;
@@ -42,12 +46,17 @@ export function createFakeBackend({
   }
 
   const fakeDb: FakeDb = {
-    users: [],
+    users: [
+      { id: "user-1", username: "Alice", email: "alice@example.com" },
+      { id: "user-2", username: "Bob", email: "bob@example.com" },
+      { id: "user-3", username: "Charlie", email: "charlie@example.com" },
+    ],
     toDoItems: [],
   };
 
-  let nextUserId = 1;
+  let nextUserId = 4;
   let nextToDoItemId = 1;
+
   let pendingFailure:
     | { operation: FakeBackendOperation; error: Error }
     | undefined;
@@ -68,9 +77,23 @@ export function createFakeBackend({
   }
 
   return {
-    createUser(username) {
+    createUser(input) {
       return execute("createUser", () => {
-        const user = { id: `user-${nextUserId++}`, username };
+        const username = input.username.trim();
+        const email = input.email.trim();
+        if (!email) {
+          throw new Error("Email is required.");
+        }
+
+        const normalizedEmail = email.toLowerCase();
+        const emailExists = fakeDb.users.some(
+          (user) => user.email.trim().toLowerCase() === normalizedEmail,
+        );
+        if (emailExists) {
+          throw new Error("Email is already in use.");
+        }
+
+        const user = { id: `user-${nextUserId++}`, username, email };
         fakeDb.users.push(user);
         return { ...user };
       });
@@ -80,6 +103,11 @@ export function createFakeBackend({
         const user = fakeDb.users.find((candidate) => candidate.id === id);
         return user ? { ...user } : null;
       });
+    },
+    listUsers() {
+      return execute("listUsers", () =>
+        fakeDb.users.map((user) => ({ ...user })),
+      );
     },
     createToDoItem(input) {
       return execute("createToDoItem", () => {

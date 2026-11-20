@@ -39,22 +39,28 @@ generates `apps/web/src/routeTree.gen.ts` from these route modules:
 
 - `index.tsx` maps `/` to an empty placeholder.
 - `users/route.tsx` provides the shared parent route for user pages.
-- `users/index.tsx` maps to `/users`.
-- `users/new.tsx` maps to `/users/new`.
-- `users/$userId.tsx` maps to `/users/:id`.
+- `users/index.tsx` maps to `/users` and renders the user list.
+- `users/new.tsx` maps to `/users/new` and renders the create form.
+- `users/$userId.tsx` maps to `/users/:id` and renders the user detail.
 - `todos.tsx` maps to `/todos`.
 
-All route components are empty placeholders at this stage.
+The user feature is implemented in `packages/users`; web route modules own
+navigation while the package exports its query hooks and presentation
+components. User creation requires a username and email; Zod validates the
+fields, and the fake backend rejects duplicate email addresses
+case-insensitively. The home and ToDoItem routes remain placeholders for their
+later steps.
 
 ## Data layer
 
 `@internal/core` provides the shared in-memory fake backend, including 300 ms
 latency, session-scoped data, and one-shot failure injection through
 `fakeBackend.failNext(...)`. The `users` and `todos` packages expose their own
-feature-facing API functions and use that same backend.
+feature-facing API functions and use that same backend. The user list starts
+with Alice, Bob, and Charlie as demonstration data, each with a unique email.
 
-## Decisions to finalize
+## Next implementation steps
 
-As implementation progresses, document the optimistic ToDoItem mutation and
-rollback, selected-user state, performance considerations, and production
-testing strategy here.
+Add the ToDoItem feature and its optimistic rollback behavior, implement
+Jotai-backed toast notifications, add focused tests, and document performance
+and production testing.

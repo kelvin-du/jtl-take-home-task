@@ -4,6 +4,7 @@ export {
   createFakeBackend,
   fakeBackend,
   type CreateToDoItemInput,
+  type CreateUserInput,
   type FakeBackend,
   type FakeBackendOperation,
   type FakeBackendOptions,

@@ -8,3 +8,4 @@ catalog:
   react-dom: ^19.3.0
   "@types/react": ^19.3.0
   "@types/react-dom": ^19.3.0
+  zod: ^4.6.7
