@@ -110,3 +110,14 @@ I declared `@tanstack/react-router` and `@tanstack/router-plugin` directly in
 >   assignee's list at `/todos`.
 > - Add an optimistic item to the selected user's query cache, replace its
 >   temporary ID on success, and restore the previous list on failure.
+
+### Step 7 — add Jotai-backed notifications
+
+> - Put reusable Jotai notification state and a dismissible, auto-expiring
+>   viewport in a dedicated `@internal/core/notifications`.
+> - Expose a provider and `useNotification` API; mount the provider around the
+>   app router.
+> - Show success/error feedback for user and ToDoItem mutations while keeping
+>   server data in TanStack Query and preserving mutation errors.
+> - Keep feature packages independent by passing mutation feedback callbacks
+>   from app routes; do not make them depend on one another.

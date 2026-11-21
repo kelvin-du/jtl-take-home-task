@@ -6,9 +6,15 @@ import { createToDoItemSchema } from "../validation";
 
 interface ToDoItemsProps {
   users: User[];
+  onItemCreated?: () => void;
+  onCreateError?: (error: Error) => void;
 }
 
-export function ToDoItems({ users }: ToDoItemsProps) {
+export function ToDoItems({
+  users,
+  onItemCreated,
+  onCreateError,
+}: ToDoItemsProps) {
   const [selectedUserId, setSelectedUserId] = useState(users[0]?.id ?? "");
   const [title, setTitle] = useState("");
   const [titleError, setTitleError] = useState<string | null>(null);
@@ -48,7 +54,9 @@ export function ToDoItems({ users }: ToDoItemsProps) {
     createMutation.mutate(result.data, {
       onSuccess: () => {
         setTitle("");
+        onItemCreated?.();
       },
+      onError: onCreateError,
     });
   };
 

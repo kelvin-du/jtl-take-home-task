@@ -5,6 +5,7 @@
   "type": "module",
   "exports": {
     ".": "./src/index.ts",
+    "./notifications": "./src/notifications/index.ts",
     "./theme.css": "./src/theme.css"
   },
   "scripts": {
@@ -12,10 +13,16 @@
     "build": "tsc",
     "lint": "tsc --noEmit"
   },
+  "dependencies": {
+    "jotai": "catalog:"
+  },
   "peerDependencies": {
-    "@tanstack/react-query": "catalog:"
+    "@tanstack/react-query": "catalog:",
+    "react": "catalog:"
   },
   "devDependencies": {
-    "@tanstack/react-query": "catalog:"
+    "@tanstack/react-query": "catalog:",
+    "@types/react": "catalog:",
+    "react": "catalog:"
   }
 }

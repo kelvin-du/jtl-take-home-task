@@ -1,6 +1,11 @@
 import { RouterProvider } from "@tanstack/react-router";
+import { NotificationsProvider } from "@internal/core/notifications";
 import { router } from "./router";
 
 export default function App() {
-  return <RouterProvider router={router} />;
+  return (
+    <NotificationsProvider>
+      <RouterProvider router={router} />
+    </NotificationsProvider>
+  );
 }

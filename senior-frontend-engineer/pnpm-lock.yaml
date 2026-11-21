@@ -15,6 +15,9 @@ catalogs:
     '@types/react-dom':
       specifier: ^19.3.0
       version: 19.3.0
+    jotai:
+      specifier: ^3.0.2
+      version: 3.0.2
     react:
       specifier: ^19.3.0
       version: 19.3.1
@@ -83,10 +86,20 @@ importers:
         version: 4.3.5
 
   packages/core:
+    dependencies:
+      jotai:
+        specifier: 'catalog:'
+        version: 3.0.2(@types/react@19.3.0)(react@19.3.1)
     devDependencies:
       '@tanstack/react-query':
         specifier: 'catalog:'
         version: 5.108.1(@types/react@19.3.0)(react@19.3.1)
+      '@types/react':
+        specifier: 'catalog:'
+        version: 19.3.0
+      react:
+        specifier: 'catalog:'
+        version: 19.3.1
 
   packages/todos:
     dependencies:
@@ -762,6 +775,18 @@ packages:
   jiti@2.7.0:
     resolution: {integrity: sha512-AC/7JofJvZGrrneWNaEnJeOLUx+JlGt7tNa0wZiRPT4MY1wmfKjt2+6O2p2uz2+skll8OZZmJMNqeke7kKbNgQ==}
     hasBin: true
+
+  jotai@3.0.2:
+    resolution: {integrity: sha512-1h+H6BQN+D048zv8hRGVeNxghxRLFZCB+l2WhFe7RhRiF0JlC8516G2BtRUXhPvMQTGB9OHst2N/BW9aNpp5aA==}
+    engines: {node: '>=22.12.0'}
+    peerDependencies:
+      '@types/react': '>=18.0.0'
+      react: '>=18.0.0'
+    peerDependenciesMeta:
+      '@types/react':
+        optional: true
+      react:
+        optional: true
 
   js-tokens@4.0.0:
     resolution: {integrity: sha512-RdJUflcE3cUzKiMqQgsCu06FPu9UdIJO0beYbPhHN4k6apgJtifcoCtT9bcxOpYBtpD2kCM6Sbzg4CausW/PKQ==}
@@ -1567,6 +1592,11 @@ snapshots:
   isbot@5.2.3: {}
 
   jiti@2.7.0: {}
+
+  jotai@3.0.2(@types/react@19.3.0)(react@19.3.1):
+    optionalDependencies:
+      '@types/react': 19.3.0
+      react: 19.3.1
 
   js-tokens@4.0.0: {}
 

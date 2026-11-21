@@ -156,20 +156,25 @@ a dependency between feature packages.
 - Switching assignees shows only that user's ToDoItems.
 - `/todos` allows viewing and creating ToDoItems for each user.
 
-### 7. Add Jotai-backed toast notifications
+### 7. Add Jotai-backed notifications
 
-Use Jotai to manage transient toast state and render a shared toast viewport at
-the app root. Show success and error notifications for user and ToDoItem
-mutations. Keep server data in TanStack Query.
+Use Jotai to manage transient notification state in the core notifications
+module and expose a provider, viewport, and `useNotification` hook. Mount the
+provider at the web app root and show success/error notifications for user and
+ToDoItem mutations. Keep server data in TanStack Query.
 
-**Justification:** Toasts provide consistent feedback across feature routes.
-Jotai is suitable for this shared UI state without duplicating server data.
+**Justification:** The repository uses `packages/core` as a shared platform
+package for cross-cutting infrastructure and UI, so notifications are exposed
+through its dedicated subpath rather than mixed into the data API. This gives
+routes consistent feedback without duplicating server data or coupling feature
+packages to each other.
 
 **Testable acceptance:**
-- Successful user and ToDoItem mutations show a success toast.
-- Failed mutations show an error toast without swallowing the mutation error.
-- Toasts can be dismissed manually and automatically disappear after five
-  seconds.
+- Successful user and ToDoItem mutations show success notifications.
+- Failed mutations show error notifications without swallowing the mutation
+  error.
+- Notifications can be dismissed manually and automatically disappear after
+  3 seconds.
 - Success and error notifications use appropriate live-region semantics, and
   the dismiss control is keyboard-accessible.
 - Jotai stores only transient notification state, not users or ToDoItems.
@@ -206,7 +211,7 @@ behaviors, especially optimistic updates and route/detail flows.
 ### 10. Document decisions and produce final README
 
 Write a half-page README covering architecture, package boundaries, backend
-choice, optimistic updates, Jotai-backed toast notifications, validation
+choice, optimistic updates, Jotai-backed notifications, validation
 choice, trade-offs, install and run instructions, performance considerations,
 and the production testing strategy.
 
@@ -227,5 +232,5 @@ judgment as clearly as the code.
 3. User create/detail happy path, loading, unknown user, and validation states.
 4. ToDoItem create/list happy path.
 5. Forced ToDoItem failure and cache rollback.
-6. Jotai success/error toast behavior and manual/automatic dismissal.
+6. Jotai success/error notifications and manual/automatic dismissal.
 7. Keyboard and live-region accessibility review.

@@ -9,13 +9,15 @@ their trade-offs are established.
 - `apps/web` owns the Vite application and composes the feature packages.
 - `packages/users` and `packages/todos` own their respective feature code and
   must not depend on each other.
-- `packages/core` contains shared infrastructure used by both features,
-  including the TanStack Query client and the Tailwind theme (`primary:
-  #0A1B45`).
-- The pnpm catalog keeps React, React DOM, their type packages, and
-  `@tanstack/react-query` versions aligned across the workspace. The web app
-  provides the runtime dependencies; core and feature packages declare Query as
-  a peer.
+- `packages/core` is the shared platform package: it contains the fake backend,
+  TanStack Query client, Tailwind theme (`primary: #0A1B45`), and reusable
+  notification infrastructure.
+- The pnpm catalog keeps React, React DOM, their type packages,
+  `@tanstack/react-query`, and Jotai versions aligned. Core and feature
+  packages declare React/Query as peers where needed.
+- `apps/web` mounts the core notifications provider at the app root. Its routes
+  bridge feature mutation callbacks to the shared notification API without coupling
+  feature packages to each other.
 - TanStack Router and its Vite plugin are declared directly in `apps/web`
   because only that app uses them.
 
@@ -60,8 +62,11 @@ feature-facing API functions and use that same backend. The user list starts
 with Alice, Bob, and Charlie as demonstration data, each with a unique email.
 ToDoItem creation uses an optimistic, per-assignee cache update with rollback
 on failure; Zod validates non-empty titles up to 120 characters.
+User and ToDoItem mutations show dismissible success/error notifications from
+the core-provided app-root viewport. Notifications expire after 3 seconds;
+server data remains in TanStack Query.
 
 ## Next implementation steps
 
-Implement Jotai-backed toast notifications, add focused tests, and document
-performance and production testing.
+Add shared navigation, focused tests, and document performance and production
+testing.

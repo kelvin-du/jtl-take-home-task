@@ -6,16 +6,19 @@ import { userInputSchema } from "../validation";
 
 interface CreateUserFormProps {
   onUserCreated?: (user: User) => void;
+  onCreateError?: (error: Error) => void;
 }
 
-export const CreateUserForm = ({ onUserCreated }: CreateUserFormProps) => {
+export const CreateUserForm = ({
+  onUserCreated,
+  onCreateError,
+}: CreateUserFormProps) => {
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [validationErrors, setValidationErrors] = useState<{
     username: string | null;
     email: string | null;
   }>({ username: null, email: null });
-  const [createdUser, setCreatedUser] = useState<User | null>(null);
   const createUserMutation = useCreateUser();
 
   const handleSubmit = (event: SubmitEvent<HTMLFormElement>) => {
@@ -31,33 +34,29 @@ export const CreateUserForm = ({ onUserCreated }: CreateUserFormProps) => {
           result.error.issues.find((issue) => issue.path[0] === "email")
             ?.message ?? null,
       });
-      setCreatedUser(null);
       return;
     }
 
     setValidationErrors({ username: null, email: null });
-    setCreatedUser(null);
     createUserMutation.mutate(result.data, {
       onSuccess: (user) => {
-        setCreatedUser(user);
         setUsername("");
         setEmail("");
         onUserCreated?.(user);
       },
+      onError: onCreateError,
     });
   };
 
   const handleUsernameChange = (value: string) => {
     setUsername(value);
     setValidationErrors((errors) => ({ ...errors, username: null }));
-    setCreatedUser(null);
     createUserMutation.reset();
   };
 
   const handleEmailChange = (value: string) => {
     setEmail(value);
     setValidationErrors((errors) => ({ ...errors, email: null }));
-    setCreatedUser(null);
     createUserMutation.reset();
   };
 
@@ -137,11 +136,6 @@ export const CreateUserForm = ({ onUserCreated }: CreateUserFormProps) => {
       >
         {createUserMutation.isPending ? "Creating..." : "Create user"}
       </button>
-      {createdUser && (
-        <p role="status">
-          User created: {createdUser.username} ({createdUser.email}).
-        </p>
-      )}
     </form>
   );
 };

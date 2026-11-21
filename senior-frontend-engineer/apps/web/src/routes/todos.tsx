@@ -1,9 +1,11 @@
 import { Link, createFileRoute } from "@tanstack/react-router";
+import { useNotification } from "@internal/core/notifications";
 import { ToDoItems } from "@internal/todos";
 import { useUserList } from "@internal/users";
 
 function ToDosPage() {
   const usersQuery = useUserList();
+  const addNotification = useNotification();
 
   if (usersQuery.isPending) {
     return <p className="p-6" role="status">Loading users...</p>;
@@ -37,7 +39,20 @@ function ToDosPage() {
     );
   }
 
-  return <ToDoItems users={usersQuery.data} />;
+  return (
+    <ToDoItems
+      onCreateError={(error) =>
+        addNotification({
+          type: "error",
+          message: error.message || "Could not create the item.",
+        })
+      }
+      onItemCreated={() =>
+        addNotification({ type: "success", message: "Item added." })
+      }
+      users={usersQuery.data}
+    />
+  );
 }
 
 export const Route = createFileRoute("/todos")({
