@@ -25,18 +25,31 @@ the main behavioral checkpoint.
 
 ## Toolchain
 
-- **AI assistant:** Copilot SDK in VS Code.
-- **Skills:** none loaded.
-- **External models:** not selected or exposed directly in this session.
+- **Copilot SDK in VS Code:** used for planning, implementation, and reviewing
+  changes.
+- **Models recorded by Copilot usage:** `gpt-6-luna` (most requests) and
+  `mai-code-2-flash` (a few requests).
+- **Claude:** additional AI assistance during the work (`Sonnet 5.5`)
+- **Skills:** no specialized skills were used.
+- **Validation tools:** pnpm, Git, and local Playwright browser checks were used to
+  verify builds, route flows, notifications, and optimistic rollback.
 
 ## Judgment and overrides
 
-- Used the repository snapshot and instruction files as the source of truth.
-- Preferred a bounded implementation plan over scaffolding immediately, because
-  package boundaries and the optimistic mutation behavior need to guide all later
-  choices.
-- Did not implement the app in this planning pass; the next pass should start
-  with workspace scaffolding and shared infrastructure.
+- Followed the task instructions and wrote a testable plan before scaffolding.
+  Each step to be reviewable and reversible, so the work was split into separate
+  step commits.
+- Used a shared pnpm catalog to keep React, Query, and their types aligned.
+  Router dependencies stayed in `apps/web`, where routing is used.
+- An initial implementation put feature API functions in `core`. I moved them
+  into `packages/users` and `packages/todos`, keeping only shared infrastructure
+  in `core`.
+- Grouped user routes under `routes/users/`.
+- Kept reusable notifications in `core`, renamed “toast” to “notification".
+- AI helped draft the plan and implementation. I checked its output with
+  builds, type checks, and browser flows, and changed the design when it did
+  not fit the requested package boundaries or router behavior.
+- I chose not to implement Step 9, which covers automated tests.
 
 ## Implementation key prompts
 

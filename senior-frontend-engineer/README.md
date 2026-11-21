@@ -1,29 +1,12 @@
-# Task board
+# Task Board
 
-This is a React + TypeScript frontend in a pnpm/Turborepo workspace. The
-implementation is underway; this README will be completed as the features and
-their trade-offs are established.
+Task Board is a small React and TypeScript app for creating users and assigning
+ToDoItems to them. It uses an in-memory fake API, so no server or account is
+needed.
 
-## Workspace boundaries
+## Run locally
 
-- `apps/web` owns the Vite application and composes the feature packages.
-- `packages/users` and `packages/todos` own their respective feature code and
-  must not depend on each other.
-- `packages/core` is the shared platform package: it contains the fake backend,
-  TanStack Query client, Tailwind theme (`primary: #0A1B45`), and reusable
-  notification infrastructure.
-- The pnpm catalog keeps React, React DOM, their type packages,
-  `@tanstack/react-query`, and Jotai versions aligned. Core and feature
-  packages declare React/Query as peers where needed.
-- `apps/web` mounts the core notifications provider at the app root. Its routes
-  bridge feature mutation callbacks to the shared notification API without coupling
-  feature packages to each other.
-- TanStack Router and its Vite plugin are declared directly in `apps/web`
-  because only that app uses them.
-
-## Local development
-
-Requires Node.js `^20.19.0` or `>=22.12.0` and pnpm 10.
+Requires Node.js 22.12 or newer, and pnpm 10. From the repository root:
 
 ```bash
 cd senior-frontend-engineer
@@ -31,44 +14,35 @@ pnpm install
 pnpm dev:web
 ```
 
-Open the local URL printed by Vite. Run `pnpm build` for a production build and
-`pnpm lint` for TypeScript checks.
+Open the local URL printed by Vite. Run `pnpm build` to build the app and
+`pnpm lint` to type-check the workspace.
 
-## Routes
+## How it is organized
 
-Routes are file-based in `apps/web/src/routes`; the TanStack Router Vite plugin
-generates `apps/web/src/routeTree.gen.ts` from these route modules:
+- `apps/web` owns the app shell, shared navigation, and file-based TanStack
+  Router routes, including `/users`, `/users/new`, `/users/:id`, and
+  `/todos`.
+- `packages/users` and `packages/todos` each own their feature's components,
+  hooks, validation, and API calls. They both use `packages/core` and do not
+  depend on each other. This keeps the features easier to change or reuse.
+- `packages/core` holds shared infrastructure: the fake backend, TanStack
+  Query setup, theme, and notification UI.
 
-- The web app root renders a shared header on every route with Users and Todo
-  Items links.
-- `index.tsx` maps `/` to a simple Task Board home page.
-- `users/route.tsx` provides the shared parent route for user pages.
-- `users/index.tsx` maps to `/users` and renders the user list.
-- `users/new.tsx` maps to `/users/new` and renders the create form.
-- `users/$userId.tsx` maps to `/users/:id` and renders the user detail.
-- `todos.tsx` maps to `/todos`, where users can select an assignee, create
-  ToDoItems, and view that assignee's list.
+TanStack Query manages user and ToDoItem data. ToDoItem lists have a separate
+cache entry per user; creating an item updates the selected user's list
+immediately and restores it if the request fails. Zod validates form input.
+Jotai holds only temporary notification state, not server data.
 
-The user feature is implemented in `packages/users`; web route modules own
-navigation while the package exports its query hooks and presentation
-components. User creation requires a username and email; Zod validates the
-fields, and the fake backend rejects duplicate email addresses
-case-insensitively. The home route remains a placeholder.
+The fake API adds a short delay, starts with three sample users, and can inject
+failures for the UI to handle. Its data is in memory, so it is not a substitute
+for a persistent backend.
 
-## Data layer
+## Performance and testing
 
-`@internal/core` provides the shared in-memory fake backend, including 300 ms
-latency, session-scoped data, and one-shot failure injection through
-`fakeBackend.failNext(...)`. The `users` and `todos` packages expose their own
-feature-facing API functions and use that same backend. The user list starts
-with Alice, Bob, and Charlie as demonstration data, each with a unique email.
-ToDoItem creation uses an optimistic, per-assignee cache update with rollback
-on failure; Zod validates non-empty titles up to 120 characters.
-User and ToDoItem mutations show dismissible success/error notifications from
-the core-provided app-root viewport. Notifications expire after 3 seconds;
-server data remains in TanStack Query.
+Per-user query keys keep list updates scoped to the selected user, and the
+optimistic update avoids waiting for the fake request to finish.
 
-## Next implementation steps
+There is no automated test suite yet (see step 9 in [`ai-journey/plan.md`](./ai-journey/plan.md))
 
-Finish the remaining app polish, add focused tests, and document performance
-and production testing.
+See [`ai-journey/`](./ai-journey/) for the plan and notes on the AI-assisted
+workflow.
