@@ -121,3 +121,9 @@ I declared `@tanstack/react-router` and `@tanstack/router-plugin` directly in
 >   server data in TanStack Query and preserving mutation errors.
 > - Keep feature packages independent by passing mutation feedback callbacks
 >   from app routes; do not make them depend on one another.
+
+### Step 8 — add shared web navigation
+
+> - Build a simple web header with links to the user and ToDoItem routes.
+> - Render the header from the root route so it appears on every page inside
+>   TanStack Router context.

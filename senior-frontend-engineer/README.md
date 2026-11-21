@@ -39,7 +39,9 @@ Open the local URL printed by Vite. Run `pnpm build` for a production build and
 Routes are file-based in `apps/web/src/routes`; the TanStack Router Vite plugin
 generates `apps/web/src/routeTree.gen.ts` from these route modules:
 
-- `index.tsx` maps `/` to an empty placeholder.
+- The web app root renders a shared header on every route with Users and Todo
+  Items links.
+- `index.tsx` maps `/` to a simple Task Board home page.
 - `users/route.tsx` provides the shared parent route for user pages.
 - `users/index.tsx` maps to `/users` and renders the user list.
 - `users/new.tsx` maps to `/users/new` and renders the create form.
@@ -68,5 +70,5 @@ server data remains in TanStack Query.
 
 ## Next implementation steps
 
-Add shared navigation, focused tests, and document performance and production
-testing.
+Finish the remaining app polish, add focused tests, and document performance
+and production testing.
