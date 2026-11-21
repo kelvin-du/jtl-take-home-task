@@ -139,20 +139,22 @@ uniqueness.
 ### 6. Build the ToDoItem feature package
 
 Separate types, API/data hooks, optimistic mutation logic, and presentation.
-Include title validation and assignee selection or assignee ID input, then
-replace the `/todos` placeholder with the ToDoItem experience.
+Include Zod title validation, let the app compose its user list into an
+assignee selector, and replace the `/todos` placeholder with the ToDoItem
+experience. Keep `packages/todos` independent of `packages/users`.
 
 **Justification:** The mutation cache update is feature-specific and belongs
-inside the ToDoItem package, with UI composition kept thin.
+inside the ToDoItem package, with UI composition kept thin. Per-assignee query
+keys isolate list data while the app provides user options without introducing
+a dependency between feature packages.
 
 **Testable acceptance:**
-- Blank, whitespace-only, or excessively long titles show validation errors.
-- Valid creation immediately inserts an item into the active user's list.
-- The optimistic item is removed or restored according to the mutation result.
-- On forced failure, the original cache state is restored and an error is shown.
+- Blank, whitespace-only, or overlong titles show validation errors.
+- Valid creation immediately inserts an item into the selected user's list.
+- On forced failure, the previous list is restored and an error is shown.
 - On success, a temporary ID is replaced or reconciled with server data.
-- A list for the wrong/unknown user does not leak items for another user.
-- `/todos` displays all ToDoItems.
+- Switching assignees shows only that user's ToDoItems.
+- `/todos` allows viewing and creating ToDoItems for each user.
 
 ### 7. Add Jotai-backed toast notifications
 

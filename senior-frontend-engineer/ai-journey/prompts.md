@@ -99,3 +99,14 @@ I declared `@tanstack/react-router` and `@tanstack/router-plugin` directly in
 > - Validate usernames (required and max 50 characters) and emails; show
 >   loading/error/not-found states and navigate to the new user's detail route.
 > - Update the README and AI journey record.
+
+### Step 6 — build the ToDoItem feature package
+
+> - Implement ToDoItem types, API hooks, presentation, title validation, and
+>   public exports in `packages/todos`.
+> - Keep `packages/todos` independent of `packages/users`; compose the users
+>   query in `apps/web` and pass available users into the ToDoItem page.
+> - Let users select an assignee, create a ToDoItem, and view the selected
+>   assignee's list at `/todos`.
+> - Add an optimistic item to the selected user's query cache, replace its
+>   temporary ID on success, and restore the previous list on failure.
